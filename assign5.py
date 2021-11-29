@@ -38,46 +38,26 @@ def TSPwGenAlgo(g, max_num_generations=10, population_size=10,
     solution_cycle_path = [] # the sequence of vertices representing final sol path to be returned
     shortest_path_each_generation = [] # store shortest path found in each generation
 
-    # g = Hamiltonian graph circuit
-    def selectBest(aList, aset):
-        i = 0
-        lowest = float('inf')
-        for index, val in enumerate(aList):
-            if val < lowest and val != 0 and index not in aset:
-                lowest = val
-                i = index
-                aset.append(index)
-                return lowest, i, aset
-
     # create individual members of the population
 
-    for i in g:
-        print(i)
     population = []
     alphabet = [i for i in range(len(g))]
-    print(f"The alphabet for this graph: {alphabet}")
-    for total in range(1):
-        recorded = []
-        starting_point = random.choice(alphabet)
-
-        ind = []
-        for curr in range(len(alphabet)):
-            print("recfafwe", recorded)
-            ind.append(alphabet[starting_point])
-            cost, starting_point, recorded = selectBest(g[starting_point], recorded)
-        population.append(ind)
-    print(population)
-
-
+    for r in range(population_size):
+        random.shuffle(alphabet)
+        population.append(list(alphabet))
+    # print(population, "asdasd")
+    solutions = []
 
     # initialize individuals to an initial 'solution'
+    for ind in population:
+        copy = ind.copy()
+        copy.append(copy[0])
+        solutions.append(copy)
+    # print(solutions)
 
-    # own note: lines 51 & 52 is used to calculate fitness not the solution!
-    # init_solut = [sum(cost) for cost in population]
-    # print(init_solut)
-
+    for x in range(max_num_generations):
     # loop for x number of generations (with possibly other early-stopping criteria)
-
+        pass
         # calculate fitness of each individual in the population
         # (and append distance of the 'fittest' to shortest_path_each_generation)
 
