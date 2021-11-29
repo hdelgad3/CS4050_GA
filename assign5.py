@@ -1,9 +1,11 @@
 """
 For this assignment there is no automated testing. You will instead submit
 your *.py file in Canvas. I will download and test your program from Canvas.
+Name: Hector Delgado
 """
 
 import time
+import random
 
 
 def adjMatFromFile(filename):
@@ -27,17 +29,52 @@ def adjMatFromFile(filename):
     return adjmat
 
 
-def TSPwGenAlgo(g, max_num_generations=____, population_size=____,
-        mutation_rate=____, explore_rate=____):
+
+def TSPwGenAlgo(g, max_num_generations=10, population_size=10,
+        mutation_rate=5, explore_rate=5):
     """ A genetic algorithm to attempt to find an optimal solution to TSP  """
 
     solution_cycle_distance = None # the distance of the final solution cycle/path
     solution_cycle_path = [] # the sequence of vertices representing final sol path to be returned
     shortest_path_each_generation = [] # store shortest path found in each generation
 
+    # g = Hamiltonian graph circuit
+    def selectBest(aList, aset):
+        i = 0
+        lowest = float('inf')
+        for index, val in enumerate(aList):
+            if val < lowest and val != 0 and index not in aset:
+                lowest = val
+                i = index
+                aset.append(index)
+                return lowest, i, aset
+
     # create individual members of the population
 
+    for i in g:
+        print(i)
+    population = []
+    alphabet = [i for i in range(len(g))]
+    print(f"The alphabet for this graph: {alphabet}")
+    for total in range(1):
+        recorded = []
+        starting_point = random.choice(alphabet)
+
+        ind = []
+        for curr in range(len(alphabet)):
+            print("recfafwe", recorded)
+            ind.append(alphabet[starting_point])
+            cost, starting_point, recorded = selectBest(g[starting_point], recorded)
+        population.append(ind)
+    print(population)
+
+
+
     # initialize individuals to an initial 'solution'
+
+    # own note: lines 51 & 52 is used to calculate fitness not the solution!
+    # init_solut = [sum(cost) for cost in population]
+    # print(init_solut)
 
     # loop for x number of generations (with possibly other early-stopping criteria)
 
@@ -123,6 +160,6 @@ def assign05_main():
 
 
 # Check if the program is being run directly (i.e. not being imported)
-if __name__ == '__main__':
+if __name__ == "__main__":
     assign05_main()
 
