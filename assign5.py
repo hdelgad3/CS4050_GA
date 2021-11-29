@@ -29,36 +29,59 @@ def adjMatFromFile(filename):
     return adjmat
 
 
-
 def TSPwGenAlgo(g, max_num_generations=10, population_size=10,
         mutation_rate=5, explore_rate=5):
     """ A genetic algorithm to attempt to find an optimal solution to TSP  """
+
+    def get_path_sum(arr)-> int:
+        fir = 0
+        sec = 1
+        total = 0
+        while sec < len(arr):
+            a = arr[fir]
+            b = arr[sec]
+            cost = g[a][b]
+            total += cost
+            fir += 1
+            sec += 1
+        return total
 
     solution_cycle_distance = None # the distance of the final solution cycle/path
     solution_cycle_path = [] # the sequence of vertices representing final sol path to be returned
     shortest_path_each_generation = [] # store shortest path found in each generation
 
     # create individual members of the population
+    for i in g:
+        print(i)
 
     population = []
     alphabet = [i for i in range(len(g))]
     for r in range(population_size):
         random.shuffle(alphabet)
         population.append(list(alphabet))
-    # print(population, "asdasd")
-    solutions = []
+    # print(population, "population")
 
+    solutions = []
     # initialize individuals to an initial 'solution'
     for ind in population:
         copy = ind.copy()
         copy.append(copy[0])
         solutions.append(copy)
-    # print(solutions)
+    print(solutions)
 
-    for x in range(max_num_generations):
+
+
     # loop for x number of generations (with possibly other early-stopping criteria)
-        pass
+    for x in range(max_num_generations):
         # calculate fitness of each individual in the population
+        fitness_sums = []
+
+        for ind in solutions:
+            ind_cost = get_path_sum(ind)
+            fitness_sums.append(ind_cost)
+        print(fitness_sums)
+
+
         # (and append distance of the 'fittest' to shortest_path_each_generation)
 
         # select the individuals to be used to spawn the generation, then create
