@@ -29,38 +29,16 @@ def adjMatFromFile(filename):
     f.close()
     return adjmat
 
-def crossover(parent1, parent2):
-    # print("Parent1: ",parent1)
-    # print("Parent2: ",parent2)
-    ch1_start = []
-    ch2_start = []
-    child1 = []
-    child2 = []
 
-    gene1 = int(random.random() * len(parent1) * 0.5)
-    gene2 = int(random.random() * len(parent1))
-    start = min(gene1, gene2)
-    end = max(gene1,gene2)
-    for i in range(start,end):
-        ch1_start.append(parent1[i])
-    ch1_end = [chrome for chrome in parent2 if chrome not in ch1_start]
-    child1 = ch1_start + ch1_end
-
-    gene3 = int(random.random() * len(parent2) * 0.5)
-    gene4 = int(random.random() * len(parent2))
-    start = min(gene3, gene4)
-    end = max(gene3, gene4)
-    for i in range(start, end):
-        ch2_start.append(parent2[i])
-    ch2_end = [chrome for chrome in parent1 if chrome not in ch2_start]
-    child2 = ch2_start + ch2_end
-
-    return child1, child2
-
-
-def TSPwGenAlgo(g, max_num_generations=10, population_size=10,
+def TSPwGenAlgo(g, max_num_generations=500, population_size=100,
         mutation_rate=0.01, explore_rate=0.6):
     """ A genetic algorithm to attempt to find an optimal solution to TSP  """
+
+    def perform_mutation(arr):
+        first = int(random.random() * len(arr))
+        second = int(random.random() * len(arr))
+        arr[first], arr[second] = arr[second], arr[first]
+        return arr
 
     def get_path_sum(arr)-> int:
         fir = 0
@@ -74,6 +52,41 @@ def TSPwGenAlgo(g, max_num_generations=10, population_size=10,
             fir += 1
             sec += 1
         return total
+
+    def crossover(parent1, parent2):
+        # print("Parent1: ",parent1)
+        # print("Parent2: ",parent2)
+        print("parent1 cost: ", get_path_sum(parent1))
+        print("parent2 cost: ", get_path_sum(parent2))
+        ch1_start = []
+        ch2_start = []
+        child1 = []
+        child2 = []
+
+        first_random = random.random()
+        second_random = random.random()
+        gene1 = int( first_random * len(parent1) * 0.5)
+        gene2 = int(second_random * len(parent1))
+        start = min(gene1, gene2)
+        end = max(gene1, gene2)
+        for i in range(start, end):
+            ch1_start.append(parent1[i])
+        ch1_end = [chrome for chrome in parent2 if chrome not in ch1_start]
+        child1 = ch1_start + ch1_end
+
+        gene3 = int(first_random * len(parent2) * 0.5)
+        gene4 = int(second_random * len(parent2))
+        start = min(gene3, gene4)
+        end = max(gene3, gene4)
+        for i in range(start, end):
+            ch2_start.append(parent2[i])
+        ch2_end = [chrome for chrome in parent1 if chrome not in ch2_start]
+        child2 = ch2_start + ch2_end
+        print("child1 cost: ", get_path_sum(child1))
+        print("child2 cost: ", get_path_sum(child2))
+
+
+        return child1, child2
 
 
     solution_cycle_distance = None # the distance of the final solution cycle/path
@@ -111,28 +124,36 @@ def TSPwGenAlgo(g, max_num_generations=10, population_size=10,
             ind_cost = get_path_sum(ind)
             fitness_sums.append(ind_cost)
             sorted_ind.append((ind_cost,ind))
-        # print(fitness_sums)
+        print(fitness_sums)
         sorted_ind.sort(key = lambda x: x[0])
-        # print(sorted_ind)
+        print(sorted_ind)
 
 
         # (and append distance of the 'fittest' to shortest_path_each_generation)
         shortest_path_each_generation.append(sorted_ind[0])
+
         # select the individuals to be used to spawn the generation, then create
         # individuals of the new generation (using some form of crossover)
-
-
-        couples = population[:int(len(population) * (1-explore_rate))]
-
-        parent1 = couples.pop(0)
-        parent2 = couples.pop(0)
-        child1, child2 = crossover(parent1, parent2)
         new_generation = []
+        sorted_population = []
+        for i in sorted_ind:
+            sorted_population.append(i[1])
 
+        couples = sorted_population[:int(len(sorted_population) * (1-explore_rate))]
 
-
+        while couples:
+            parent1 = couples.pop(0)
+            parent2 = couples.pop(0)
+            if parent2 == None:
+                parent2 = parent1.reverse()
+            child1, child2 = crossover(parent1, parent2)
+            new_generation.append(child1)
+            new_generation.append(child2)
+        print(new_generation)
 
         # allow for mutations (this should not happen too often)
+
+
 
         # ...
     # calculate and verify final solution, and update solution_cycle_distance,
