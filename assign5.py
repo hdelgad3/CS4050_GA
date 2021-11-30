@@ -34,12 +34,22 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
     """ A genetic algorithm to attempt to find an optimal solution to TSP  """
 
     def perform_mutation(arr):
+        """
+        Mutates an individual by swapping two genes places.
+        :param arr - The array to be mutated.
+        :return arr - Mutated array.
+        """
         first = int(random.random() * len(arr))
         second = int(random.random() * len(arr))
         arr[first], arr[second] = arr[second], arr[first]
         return arr
 
     def get_path_sum(arr)-> int:
+        """
+        Calculates the distance of a given array with indices in the path.
+        :param arr - Array with the path.
+        :return total - sum distances in the path.
+        """
         fir = 0
         sec = 1
         total = 0
@@ -53,10 +63,11 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
         return total
 
     def crossover(parent1, parent2):
-        # print("Parent1: ",parent1)
-        # print("Parent2: ",parent2)
-        # print("parent1 cost: ", get_path_sum(parent1))
-        # print("parent2 cost: ", get_path_sum(parent2))
+        """
+        Performs one point crossover to generate two children.
+        :param parent1, parent2 - Two arrays with paths.
+        :return child1, child2 - Two arrays containing crossover genes from the parents.
+        """
         ch1_start = []
         ch2_start = []
         child1 = []
@@ -81,19 +92,21 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
             ch2_start.append(parent2[i])
         ch2_end = [chrome for chrome in parent1 if chrome not in ch2_start]
         child2 = ch2_start + ch2_end
-        print("child1 cost: ", get_path_sum(child1))
-        print("child2 cost: ", get_path_sum(child2))
 
 
         return child1, child2
 
     def create_solutions(arr):
+        """
+        Given an array, appends the first index to the end.
+        :param arr - Array with path.
+        :return solutions - Altered Path.
+        """
         solutions = []
         for curr in arr:
             copy = curr.copy()
             copy.append(copy[0])
             solutions.append(copy)
-        print("solutions: ",solutions)
         return solutions
 
 
@@ -103,12 +116,13 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
 
     # create individual members of the population
 
+    # Creates random generated arrays using values from the alphabet.
     population = []
     alphabet = [i for i in range(len(g))]
     for r in range(population_size):
         random.shuffle(alphabet)
         population.append(list(alphabet))
-    # print(population, "population")
+
 
 
     # initialize individuals to an initial 'solution'
@@ -123,19 +137,16 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
             fittest = create_solutions(population)
         fitness_sums = []
         sorted_ind = []
-
+        # Calculates distances and sorts the fittest individuals.
         for ind in fittest:
             ind_cost = get_path_sum(ind)
             fitness_sums.append(ind_cost)
             sorted_ind.append((ind_cost,ind))
-        # print("fittest: ", fitness_sums)
         sorted_ind.sort(key=lambda z: z[0])
-        # print("sorted list of tuples: ",sorted_ind)
 
 
         # (and append distance of the 'fittest' to shortest_path_each_generation)
         shortest_path_each_generation.append(sorted_ind[0])
-        print("adfasf: ", shortest_path_each_generation)
 
         # select the individuals to be used to spawn the generation, then create
         # individuals of the new generation (using some form of crossover)
@@ -145,7 +156,6 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
             sorted_population.append(i[1])
 
         couples = fittest
-        # print("couples ", couples)
 
         while couples:
             parent1 = couples.pop(0)
@@ -155,7 +165,6 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
             child1, child2 = crossover(parent1, parent2)
             new_generation.append(child1)
             new_generation.append(child2)
-        # print(new_generation)
 
         # allow for mutations (this should not happen too often)
         for ind in new_generation:
@@ -168,12 +177,8 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
 
     # calculate and verify final solution, and update solution_cycle_distance,
     shortest_path_each_generation.sort(key=lambda t: t[0])
-    print("each generations shortest path: ", shortest_path_each_generation)
-
     solution_cycle_distance = shortest_path_each_generation[0][0]
-    print(solution_cycle_distance)
     solution_cycle_path = shortest_path_each_generation[0][1]
-    print(solution_cycle_path)
 
     return {
             'solution': solution_cycle_path,
@@ -187,7 +192,6 @@ def TSPwDynProg(g):
     solution_cycle_distance = None # the distance of the final solution cycle/path
     solution_cycle_path = [] # the sequence of vertices representing final sol path to be returned
 
-    #...
 
     return {
             'solution': solution_cycle_path,
