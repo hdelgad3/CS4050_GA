@@ -30,25 +30,32 @@ def adjMatFromFile(filename):
     return adjmat
 
 def crossover(parent1, parent2):
-    print("Parent1: ",parent1)
-    print("Parent2: ",parent2)
-    slice1 = parent1[int(len(parent1) * 0.3): int(len(parent1) * 0.7)]
-    slice2 = parent2[int(len(parent2) * 0.3): int(len(parent2) * 0.7)]
-    print(slice1, slice2)
-    values_from_parent2 = parent2[int(len(parent2) * 0.3):] + parent2[:int(len(parent2) * 0.3)]
-    print("values p2: ", values_from_parent2)
+    # print("Parent1: ",parent1)
+    # print("Parent2: ",parent2)
+    ch1_start = []
+    ch2_start = []
     child1 = []
-    while len(child1) < len(parent1):
-        i = 0
-        if i == int(len(parent1) * 0.3):
-            child1 += slice1
-        else:
-            if values_from_parent2[i] not in slice1:
-                child1.append(values_from_parent2[i])
-        i += 1
-    print("child1: ",child1)
+    child2 = []
 
-    return 1,1
+    gene1 = int(random.random() * len(parent1) * 0.5)
+    gene2 = int(random.random() * len(parent1))
+    start = min(gene1, gene2)
+    end = max(gene1,gene2)
+    for i in range(start,end):
+        ch1_start.append(parent1[i])
+    ch1_end = [chrome for chrome in parent2 if chrome not in ch1_start]
+    child1 = ch1_start + ch1_end
+
+    gene3 = int(random.random() * len(parent2) * 0.5)
+    gene4 = int(random.random() * len(parent2))
+    start = min(gene3, gene4)
+    end = max(gene3, gene4)
+    for i in range(start, end):
+        ch2_start.append(parent2[i])
+    ch2_end = [chrome for chrome in parent1 if chrome not in ch2_start]
+    child2 = ch2_start + ch2_end
+
+    return child1, child2
 
 
 def TSPwGenAlgo(g, max_num_generations=10, population_size=10,
