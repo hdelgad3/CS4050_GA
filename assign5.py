@@ -6,7 +6,6 @@ Name: Hector Delgado
 
 import time
 import random
-from queue import PriorityQueue
 
 
 def adjMatFromFile(filename):
@@ -30,7 +29,7 @@ def adjMatFromFile(filename):
     return adjmat
 
 
-def TSPwGenAlgo(g, max_num_generations=500, population_size=100,
+def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
         mutation_rate=0.01, explore_rate=0.6):
     """ A genetic algorithm to attempt to find an optimal solution to TSP  """
 
@@ -56,8 +55,8 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=100,
     def crossover(parent1, parent2):
         # print("Parent1: ",parent1)
         # print("Parent2: ",parent2)
-        print("parent1 cost: ", get_path_sum(parent1))
-        print("parent2 cost: ", get_path_sum(parent2))
+        # print("parent1 cost: ", get_path_sum(parent1))
+        # print("parent2 cost: ", get_path_sum(parent2))
         ch1_start = []
         ch2_start = []
         child1 = []
@@ -88,14 +87,21 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=100,
 
         return child1, child2
 
+    def create_solutions(arr):
+        solutions = []
+        for curr in arr:
+            copy = curr.copy()
+            copy.append(copy[0])
+            solutions.append(copy)
+        print("solutions: ",solutions)
+        return solutions
+
 
     solution_cycle_distance = None # the distance of the final solution cycle/path
     solution_cycle_path = [] # the sequence of vertices representing final sol path to be returned
     shortest_path_each_generation = [] # store shortest path found in each generation
 
     # create individual members of the population
-    for i in g:
-        print(i)
 
     population = []
     alphabet = [i for i in range(len(g))]
@@ -104,33 +110,32 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=100,
         population.append(list(alphabet))
     # print(population, "population")
 
-    solutions = []
-    # initialize individuals to an initial 'solution'
-    for ind in population:
-        copy = ind.copy()
-        copy.append(copy[0])
-        solutions.append(copy)
-    print(solutions)
 
+    # initialize individuals to an initial 'solution'
+    solutions = create_solutions(population)
+    fittest = solutions[:int(len(solutions) * (1-explore_rate))]
 
 
     # loop for x number of generations (with possibly other early-stopping criteria)
     for x in range(max_num_generations):
         # calculate fitness of each individual in the population
+        if x != 0:
+            fittest = create_solutions(population)
         fitness_sums = []
         sorted_ind = []
 
-        for ind in solutions:
+        for ind in fittest:
             ind_cost = get_path_sum(ind)
             fitness_sums.append(ind_cost)
             sorted_ind.append((ind_cost,ind))
-        print(fitness_sums)
-        sorted_ind.sort(key = lambda x: x[0])
-        print(sorted_ind)
+        # print("fittest: ", fitness_sums)
+        sorted_ind.sort(key=lambda z: z[0])
+        # print("sorted list of tuples: ",sorted_ind)
 
 
         # (and append distance of the 'fittest' to shortest_path_each_generation)
         shortest_path_each_generation.append(sorted_ind[0])
+        print("adfasf: ", shortest_path_each_generation)
 
         # select the individuals to be used to spawn the generation, then create
         # individuals of the new generation (using some form of crossover)
@@ -139,27 +144,36 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=100,
         for i in sorted_ind:
             sorted_population.append(i[1])
 
-        couples = sorted_population[:int(len(sorted_population) * (1-explore_rate))]
+        couples = fittest
+        # print("couples ", couples)
 
         while couples:
             parent1 = couples.pop(0)
             parent2 = couples.pop(0)
-            if parent2 == None:
-                parent2 = parent1.reverse()
+            if parent2 is None or not parent2:
+                parent2 = parent1[::-1]
             child1, child2 = crossover(parent1, parent2)
             new_generation.append(child1)
             new_generation.append(child2)
-        print(new_generation)
+        # print(new_generation)
 
         # allow for mutations (this should not happen too often)
+        for ind in new_generation:
+            thresh = random.random()
+            if thresh < mutation_rate:
+                perform_mutation(ind)
+
+        population = new_generation
 
 
-
-        # ...
     # calculate and verify final solution, and update solution_cycle_distance,
-    # solution_path, etc.
+    shortest_path_each_generation.sort(key=lambda t: t[0])
+    print("each generations shortest path: ", shortest_path_each_generation)
 
-    # ...
+    solution_cycle_distance = shortest_path_each_generation[0][0]
+    print(solution_cycle_distance)
+    solution_cycle_path = shortest_path_each_generation[0][1]
+    print(solution_cycle_path)
 
     return {
             'solution': solution_cycle_path,
@@ -196,7 +210,7 @@ def TSPwBandB(g):
 
 def assign05_main():
     """ Load the graph (change the filename when you're ready to test larger ones) """
-    g = adjMatFromFile("complete_graph_n08.txt")
+    g = adjMatFromFile("complete_graph_n100.txt")
 
     # Run genetic algorithm to find best solution possible
     start_time = time.time()
