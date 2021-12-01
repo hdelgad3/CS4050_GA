@@ -30,7 +30,7 @@ def adjMatFromFile(filename):
 
 
 def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
-        mutation_rate=0.01, explore_rate=0.6):
+                mutation_rate=0.01, explore_rate=0.7):
     """ A genetic algorithm to attempt to find an optimal solution to TSP  """
 
     def perform_mutation(arr):
@@ -44,7 +44,7 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
         arr[first], arr[second] = arr[second], arr[first]
         return arr
 
-    def get_path_sum(arr)-> int:
+    def get_path_sum(arr) -> int:
         """
         Calculates the distance of a given array with indices in the path.
         :param arr - Array with the path.
@@ -70,12 +70,10 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
         """
         ch1_start = []
         ch2_start = []
-        child1 = []
-        child2 = []
 
         first_random = random.random()
         second_random = random.random()
-        gene1 = int( first_random * len(parent1) * 0.5)
+        gene1 = int(first_random * len(parent1) * 0.5)
         gene2 = int(second_random * len(parent1))
         start = min(gene1, gene2)
         end = max(gene1, gene2)
@@ -93,7 +91,6 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
         ch2_end = [chrome for chrome in parent1 if chrome not in ch2_start]
         child2 = ch2_start + ch2_end
 
-
         return child1, child2
 
     def create_solutions(arr):
@@ -109,10 +106,9 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
             solutions.append(copy)
         return solutions
 
-
-    solution_cycle_distance = None # the distance of the final solution cycle/path
-    solution_cycle_path = [] # the sequence of vertices representing final sol path to be returned
-    shortest_path_each_generation = [] # store shortest path found in each generation
+    solution_cycle_distance = None  # the distance of the final solution cycle/path
+    solution_cycle_path = []  # the sequence of vertices representing final sol path to be returned
+    shortest_path_each_generation = []  # store shortest path found in each generation
 
     # create individual members of the population
 
@@ -123,12 +119,9 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
         random.shuffle(alphabet)
         population.append(list(alphabet))
 
-
-
     # initialize individuals to an initial 'solution'
     solutions = create_solutions(population)
-    fittest = solutions[:int(len(solutions) * (1-explore_rate))]
-
+    fittest = solutions[:int(len(solutions) * (1 - explore_rate))]
 
     # loop for x number of generations (with possibly other early-stopping criteria)
     for x in range(max_num_generations):
@@ -141,9 +134,8 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
         for ind in fittest:
             ind_cost = get_path_sum(ind)
             fitness_sums.append(ind_cost)
-            sorted_ind.append((ind_cost,ind))
+            sorted_ind.append((ind_cost, ind))
         sorted_ind.sort(key=lambda z: z[0])
-
 
         # (and append distance of the 'fittest' to shortest_path_each_generation)
         shortest_path_each_generation.append(sorted_ind[0])
@@ -174,42 +166,40 @@ def TSPwGenAlgo(g, max_num_generations=500, population_size=300,
 
         population = new_generation
 
-
     # calculate and verify final solution, and update solution_cycle_distance,
     shortest_path_each_generation.sort(key=lambda t: t[0])
     solution_cycle_distance = shortest_path_each_generation[0][0]
     solution_cycle_path = shortest_path_each_generation[0][1]
 
     return {
-            'solution': solution_cycle_path,
-            'solution_distance': solution_cycle_distance,
-            'evolution': shortest_path_each_generation
-           }
+        'solution': solution_cycle_path,
+        'solution_distance': solution_cycle_distance,
+        'evolution': shortest_path_each_generation
+    }
 
 
 def TSPwDynProg(g):
     """ (10pts extra credit) A dynamic programming approach to solve TSP """
-    solution_cycle_distance = None # the distance of the final solution cycle/path
-    solution_cycle_path = [] # the sequence of vertices representing final sol path to be returned
-
+    solution_cycle_distance = None  # the distance of the final solution cycle/path
+    solution_cycle_path = []  # the sequence of vertices representing final sol path to be returned
 
     return {
-            'solution': solution_cycle_path,
-            'solution_distance': solution_cycle_distance,
-           }
+        'solution': solution_cycle_path,
+        'solution_distance': solution_cycle_distance,
+    }
 
 
 def TSPwBandB(g):
     """ (10pts extra credit) A branch and bound approach to solve TSP """
-    solution_cycle_distance = None # the distance of the final solution cycle/path
-    solution_cycle_path = [] # the sequence of vertices representing final sol path to be returned
+    solution_cycle_distance = None  # the distance of the final solution cycle/path
+    solution_cycle_path = []  # the sequence of vertices representing final sol path to be returned
 
-    #...
+    # ...
 
     return {
-            'solution': solution_cycle_path,
-            'solution_distance': solution_cycle_distance,
-           }
+        'solution': solution_cycle_path,
+        'solution_distance': solution_cycle_distance,
+    }
 
 
 def assign05_main():
@@ -248,4 +238,3 @@ def assign05_main():
 # Check if the program is being run directly (i.e. not being imported)
 if __name__ == "__main__":
     assign05_main()
-
